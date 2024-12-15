@@ -13,7 +13,10 @@ connectDb()
 app.use(express.json())
 
 app.use("/api/contacts", require("./routes/contactRoutes.js"))
+app.use("/api/users", require("./routes/userRoutes.js"))
+
 app.use(errorHandler)
+
 app.listen(port,()=>{
     console.log(`Server started at port ${port}`)
 })
