@@ -1,12 +1,17 @@
-const asyncHandler = require("express-async-handler")
-const Contact = require("../models/contactModel")
-const contactModel = require("../models/contactModel")
+const asyncHandler = require("express-async-handler");
+const Contact = require("../models/contactModel");
+const contactModel = require("../models/contactModel");
 
 //@route GET /api/contacts
-const getContacts = async(req,res)=>{
-    const contacts = await Contact.find({user_id: req.user.id})
-    res.status(200).json(contacts)
-}
+const getContacts = asyncHandler(async (req, res) => {
+    if (!req.user || !req.user.id) {
+        res.status(401);
+        throw new Error("User not authenticated");
+    }
+    
+    const contacts = await Contact.find({ user_id: req.user.id });
+    res.status(200).json(contacts);
+});
 
 //@route GET /api/contacts/:id
 const getContactsById = asyncHandler( async(req,res)=>{

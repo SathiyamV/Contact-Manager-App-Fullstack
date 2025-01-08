@@ -1,0 +1,74 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-gray-50 text-gray-900;
+  }
+  h1 {
+    @apply text-4xl font-bold text-gray-900;
+  }
+  h2 {
+    @apply text-2xl font-semibold text-gray-800;
+  }
+}
+
+@layer components {
+  /* Layout Components */
+  .page-container {
+    @apply min-h-screen bg-gray-50 py-8 px-4;
+  }
+  .content-wrapper {
+    @apply max-w-7xl mx-auto sm:px-6 lg:px-8;
+  }
+
+  /* Form Components */
+  .form-input {
+    @apply w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500;
+  }
+  .form-label {
+    @apply block text-sm font-medium text-gray-700 mb-1;
+  }
+  .form-button {
+    @apply w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500;
+  }
+
+  /* Card Components */
+  .contact-card {
+    @apply bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-300;
+  }
+  .contact-header {
+    @apply flex items-center space-x-4 mb-4;
+  }
+  .contact-avatar {
+    @apply h-12 w-12 rounded-full bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 flex items-center justify-center text-white font-bold text-xl;
+  }
+
+  /* Navigation Components */
+  .nav-link {
+    @apply text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium;
+  }
+  .nav-link-active {
+    @apply bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium;
+  }
+
+  /* Button Components */
+  .btn-primary {
+    @apply bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors;
+  }
+  .btn-secondary {
+    @apply bg-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300 transition-colors;
+  }
+  .btn-danger {
+    @apply bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors;
+  }
+
+  /* Alert Components */
+  .alert-success {
+    @apply bg-green-100 border-l-4 border-green-500 text-green-700 p-4;
+  }
+  .alert-error {
+    @apply bg-red-100 border-l-4 border-red-500 text-red-700 p-4;
+  }
+}
