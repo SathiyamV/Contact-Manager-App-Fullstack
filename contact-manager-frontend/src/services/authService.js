@@ -1,4 +1,6 @@
-const API_URL = 'http://localhost:5000/api/users';
+const API_URL = process.env.NODE_ENV === 'development' 
+    ? 'http://localhost:5000/api/users'
+    : 'https://contact-backend-f8or.onrender.com/api/users';
 
 export const login = async (credentials) => {
     const response = await fetch(`${API_URL}/login`, {
@@ -6,12 +8,13 @@ export const login = async (credentials) => {
         headers: {
             'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify(credentials)
     });
-    const data = await response.json();
-    if (!response.ok) throw new Error(data.message);
-    if (data.token) localStorage.setItem('token', data.token);
-    return data;
+    if (!response.ok) {
+        throw new Error('Login failed');
+    }
+    return response.json();
 };
 
 export const register = async (userData) => {

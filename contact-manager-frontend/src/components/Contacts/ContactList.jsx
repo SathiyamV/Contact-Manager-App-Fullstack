@@ -1,10 +1,12 @@
-import React, { useState, useContext, useEffect } from 'react';
-import { ContactContext } from '../../context/ContactContext';
+import React, { useState, useEffect } from 'react';
+import ContactCard from './ContactCard';
 import ContactForm from './ContactForm';
-import { createContact, updateContact, deleteContact } from '../../services/contactService';
+import SearchBar from './SearchBar';
+import { getContacts, createContact, updateContact, deleteContact } from '../../services/contactService';
 
 const ContactList = () => {
-    const { contacts, fetchContacts } = useContext(ContactContext);
+    const [contacts, setContacts] = useState([]);
+    const [filteredContacts, setFilteredContacts] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingContact, setEditingContact] = useState(null);
     const [error, setError] = useState(null);
@@ -12,6 +14,15 @@ const ContactList = () => {
     useEffect(() => {
         fetchContacts();
     }, []);
+
+    const fetchContacts = async () => {
+        try {
+            const data = await getContacts();
+            setContacts(data);
+        } catch (err) {
+            setError(err.message);
+        }
+    };
 
     const handleSubmit = async (formData) => {
         try {
@@ -37,6 +48,46 @@ const ContactList = () => {
         }
     };
 
+    const handleSearch = (query) => {
+        if (!query.trim()) {
+            setFilteredContacts(contacts);
+            return;
+        }
+
+        const searchTerm = query.toLowerCase();
+        const filtered = contacts.filter(contact => 
+            contact.name.toLowerCase().includes(searchTerm) ||
+            contact.email?.toLowerCase().includes(searchTerm) ||
+            contact.phone.toLowerCase().includes(searchTerm)
+        );
+        setFilteredContacts(filtered);
+    };
+
+    const sortContacts = (contacts) => {
+        return [...contacts].sort((a, b) => a.name.localeCompare(b.name));
+    };
+
+    const renderContacts = () => {
+        const contactsToShow = filteredContacts.length > 0 ? filteredContacts : contacts;
+        const sortedContacts = sortContacts(contactsToShow);
+
+        return (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {sortedContacts.map(contact => (
+                    <ContactCard
+                        key={contact._id}
+                        contact={contact}
+                        onEdit={() => {
+                            setEditingContact(contact);
+                            setIsModalOpen(true);
+                        }}
+                        onDelete={() => handleDelete(contact._id)}
+                    />
+                ))}
+            </div>
+        );
+    };
+
     return (
         <div className="container mx-auto p-4">
             {error && (
@@ -55,32 +106,9 @@ const ContactList = () => {
                 </button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {contacts.map(contact => (
-                    <div key={contact._id} className="bg-white p-4 rounded-lg shadow">
-                        <h3 className="text-xl font-semibold">{contact.name}</h3>
-                        <p className="text-gray-600">{contact.email}</p>
-                        <p className="text-gray-600">{contact.phone}</p>
-                        <div className="mt-4 flex justify-end space-x-2">
-                            <button 
-                                onClick={() => {
-                                    setEditingContact(contact);
-                                    setIsModalOpen(true);
-                                }}
-                                className="text-blue-500 hover:text-blue-700"
-                            >
-                                Edit
-                            </button>
-                            <button 
-                                onClick={() => handleDelete(contact._id)}
-                                className="text-red-500 hover:text-red-700"
-                            >
-                                Delete
-                            </button>
-                        </div>
-                    </div>
-                ))}
-            </div>
+            <SearchBar onSearch={handleSearch} />
+            
+            {renderContacts()}
 
             {isModalOpen && (
                 <ContactForm 

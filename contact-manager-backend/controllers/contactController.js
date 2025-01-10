@@ -26,21 +26,21 @@ const getContactsById = asyncHandler( async(req,res)=>{
 });
 
 //@route POST /api/contacts
-const createContacts = asyncHandler( async(req,res)=>{
-    console.log(req.body)
-    const {name,email,phone} = req.body
-    if(!name || !email || !phone){
+const createContacts = asyncHandler(async (req, res) => {
+    const { name, email, phone } = req.body;
+    if (!name || !phone) {
         res.status(400);
-        throw new Error ("All fields are mandatory")
+        throw new Error("Name and phone are mandatory");
     }
+
     const contact = await Contact.create({
         name,
-        email,
+        email: email || "", // Handle empty email
         phone,
         user_id: req.user.id
-    })
-    res.status(201).json(contact)
-})
+    });
+    res.status(201).json(contact);
+});
 
 //@route PUT /api/contacts/:id
 const updateContacts = asyncHandler( async(req,res)=>{
@@ -81,10 +81,29 @@ const deleteContacts = asyncHandler( async(req,res)=>{
     res.status(200).json(contact)
 })
 
+//@route GET /api/contacts/search
+const searchContacts = asyncHandler(async (req, res) => {
+    const { query } = req.query;
+    const contacts = await Contact.find({
+        $and: [
+            { user_id: req.user.id },
+            {
+                $or: [
+                    { name: { $regex: query, $options: 'i' } },
+                    { email: { $regex: query, $options: 'i' } },
+                    { phone: { $regex: query, $options: 'i' } }
+                ]
+            }
+        ]
+    });
+    res.json(contacts);
+});
+
 module.exports = {
     getContacts,
     getContactsById,
     createContacts,
     updateContacts,
-    deleteContacts
+    deleteContacts,
+    searchContacts
 }

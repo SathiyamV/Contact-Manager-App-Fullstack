@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 
-const ContactForm = ({ contact, onClose, onSubmit }) => {
+const ContactForm = ({ contact, onSubmit, onClose }) => {
     const [formData, setFormData] = useState({
-        name: '',
-        email: '',
-        phone: ''
+        name: contact?.name || '',
+        email: contact?.email || '',
+        phone: contact?.phone || ''
     });
 
     useEffect(() => {
@@ -13,16 +13,27 @@ const ContactForm = ({ contact, onClose, onSubmit }) => {
         }
     }, [contact]);
 
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            // Remove email if it's empty
+            const submitData = {
+                ...formData,
+                email: formData.email || undefined
+            };
+            await onSubmit(submitData);
+        } catch (err) {
+            console.error('Form submission error:', err);
+        }
+    };
+
     return (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center">
             <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-md">
                 <h3 className="text-xl font-bold mb-4">
                     {contact ? 'Edit Contact' : 'Add Contact'}
                 </h3>
-                <form onSubmit={(e) => {
-                    e.preventDefault();
-                    onSubmit(formData);
-                }}>
+                <form onSubmit={handleSubmit}>
                     <div className="space-y-4">
                         <input
                             type="text"
@@ -34,11 +45,10 @@ const ContactForm = ({ contact, onClose, onSubmit }) => {
                         />
                         <input
                             type="email"
-                            placeholder="Email"
+                            placeholder="Email (Optional)"
                             value={formData.email}
                             onChange={(e) => setFormData({...formData, email: e.target.value})}
                             className="w-full p-2 border rounded"
-                            required
                         />
                         <input
                             type="tel"
@@ -49,11 +59,11 @@ const ContactForm = ({ contact, onClose, onSubmit }) => {
                             required
                         />
                     </div>
-                    <div className="mt-6 flex justify-end space-x-2">
+                    <div className="mt-4 flex justify-end space-x-2">
                         <button
                             type="button"
                             onClick={onClose}
-                            className="px-4 py-2 text-gray-600 hover:text-gray-800"
+                            className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
                         >
                             Cancel
                         </button>

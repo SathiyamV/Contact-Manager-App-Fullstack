@@ -15,7 +15,8 @@ const contactSchema = mongoose.Schema({
     },
     email: {
         type:String,
-        required: [true, "Please add the contact email"]
+        required: false, // Make email optional
+        default: "" // Set default empty string
     },
     phone: {
         type:String,
@@ -24,6 +25,8 @@ const contactSchema = mongoose.Schema({
 },{
     timestamps: true,
 })
+
+contactSchema.index({ name: 'text', email: 'text', phone: 'text' });
 
 contactSchema.methods.toJSON = function () {
     const obj = this.toObject();
